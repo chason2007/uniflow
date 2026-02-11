@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "UniFlow",
+    "slug": "uniflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

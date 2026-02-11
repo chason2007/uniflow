@@ -71,7 +71,7 @@ export default function HomeScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Student Productivity</Text>
+            <Text style={styles.title}>UniFlow</Text>
 
             <View style={styles.widgetContainer}>
                 <Text style={styles.widgetText}>One-Tap Voice Widget</Text>
