@@ -50,7 +50,11 @@ const processVoiceCommand = async (req, res) => {
         res.json({ message: "Voice command processed", data: intentData });
     } catch (error) {
         console.error("Voice processing error:", error);
-        res.status(500).json({ error: "Failed to process voice command" });
+        res.status(500).json({ error: "Failed to process voice command", details: error.message, stack: error.stack });
+    } finally {
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 };
 
