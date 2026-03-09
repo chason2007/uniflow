@@ -23,6 +23,12 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/unipil
 mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('MongoDB connected successfully');
+
+        // Initialize BullMQ Worker Engine
+        const setupWorker = require('./services/reminderWorker');
+        const worker = setupWorker();
+        console.log('BullMQ Background Worker Daemon started');
+
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

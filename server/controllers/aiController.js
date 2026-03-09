@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { scheduleReminder, cancelReminders } = require('../services/queueService');
 
 exports.parseVoiceToTask = async (req, res) => {
     try {
@@ -24,17 +25,34 @@ exports.parseVoiceToTask = async (req, res) => {
         let mockExtractedData = {};
 
         if (intent === 'CREATE') {
+            const dueDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // Tomorrow
             mockExtractedData = {
+                _id: 'mock-id-' + Date.now(), // Simulated DB ID needed for Queue
                 title: "Generated from: " + text.substring(0, 20) + "...",
-                currentDueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                currentDueDate: dueDate.toISOString(),
                 category: lowerText.includes('quiz') ? 'Quiz' : (lowerText.includes('project') ? 'Project' : 'Assignment')
             };
+
+            // Schedule reminder to fire 2 hours before the due date
+            const delayMs = dueDate.getTime() - Date.now() - (2 * 60 * 60 * 1000);
+            if (delayMs > 0) {
+                await scheduleReminder(mockExtractedData, delayMs);
+            }
+
         } else if (intent === 'UPDATE') {
             // Mocking target entity extraction ("the quiz", "history paper")
             mockExtractedData = {
                 targetEntity: lowerText.replace(/(change|move|update|delay|to)/gi, '').trim(),
                 newDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // Move out 3 days
             };
+            // In a real DB scenario, we would `await cancelReminders(taskId)` here
+            // and then reschedule it with the new date.
+
+        } else if (intent === 'DELETE') {
+            mockExtractedData = {
+                targetEntity: lowerText.replace(/(delete|remove|cancel)/gi, '').trim()
+            };
+            // In a real DB scenario, we would `await cancelReminders(taskId)` here
         }
 
         return res.status(200).json({
