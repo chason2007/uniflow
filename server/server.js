@@ -21,12 +21,12 @@ app.use('/api/ai', aiRoutes);
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/unipilot';
 
 mongoose.connect(MONGODB_URI)
-    .then(() => {
+    .then(async () => {
         console.log('MongoDB connected successfully');
 
         // Initialize BullMQ Worker Engine
         const setupWorker = require('./services/reminderWorker');
-        const worker = setupWorker();
+        const worker = await setupWorker();
         console.log('BullMQ Background Worker Daemon started');
 
         app.listen(PORT, () => {

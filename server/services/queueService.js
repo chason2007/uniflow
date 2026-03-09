@@ -1,15 +1,15 @@
 const { Queue } = require('bullmq');
+const { getRedisOptions } = require('./redisConfig');
 
-// Redis configuration
-const redisOptions = {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379
-};
+let reminderQueue;
 
-// Create a new queue
-const reminderQueue = new Queue('task-reminders', {
-    connection: redisOptions
-});
+// Asynchronously initialize queue
+async function initQueue() {
+    const redisOptions = await getRedisOptions();
+    reminderQueue = new Queue('task-reminders', {
+        connection: redisOptions
+    });
+}
 
 /**
  * Schedule a reminder for a task
@@ -18,6 +18,7 @@ const reminderQueue = new Queue('task-reminders', {
  */
 const scheduleReminder = async (taskData, delayMs) => {
     try {
+        if (!reminderQueue) await initQueue();
         await reminderQueue.add(
             `reminder-${taskData._id}`,
             { taskId: taskData._id, title: taskData.title },
@@ -38,6 +39,7 @@ const scheduleReminder = async (taskData, delayMs) => {
  */
 const cancelReminders = async (taskId) => {
     try {
+        if (!reminderQueue) await initQueue();
         const jobs = await reminderQueue.getJobs(['delayed', 'waiting']);
         for (const job of jobs) {
             if (job.data.taskId === taskId) {
@@ -51,7 +53,8 @@ const cancelReminders = async (taskId) => {
 };
 
 module.exports = {
-    reminderQueue,
+    initQueue,
+    get queue() { return reminderQueue; }, // Export as getter so it resolves after initialization
     scheduleReminder,
     cancelReminders
 };

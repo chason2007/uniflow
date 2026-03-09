@@ -1,12 +1,10 @@
 const { Worker } = require('bullmq');
 const Task = require('../models/Task');
+const { getRedisOptions } = require('./redisConfig');
 
-const redisOptions = {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379
-};
+const setupWorker = async () => {
+    const redisOptions = await getRedisOptions();
 
-const setupWorker = () => {
     const worker = new Worker(
         'task-reminders',
         async (job) => {

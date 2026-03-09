@@ -70,7 +70,7 @@ const Dashboard = () => {
             {/* Top Navigation Bar */}
             <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-lg">U</div>
+                    <img src="/logo.png" alt="UniPilot Logo" className="w-8 h-8 object-contain drop-shadow-sm" />
                     <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">UniPilot</h1>
                 </div>
                 <div className="flex items-center gap-4">
